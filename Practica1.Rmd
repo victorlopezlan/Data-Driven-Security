@@ -1,6 +1,6 @@
 ---
 title: "Practica1"
-author: "Oriol, Victor, Miriam, Ulises"
+author: "Oriol, Víctor, Miriam, Ulises"
 date: "2025-12-15"
 output: html_document
 ---
