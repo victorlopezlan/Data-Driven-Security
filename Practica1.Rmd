@@ -1,5 +1,5 @@
 ---
-title: "Practica1"
+title: "Práctica 1"
 author: "Oriol, Víctor, Miriam, Ulises"
 date: "2025-12-15"
 output: html_document
@@ -11,9 +11,16 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Ejercicio 1
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+De las siguientes preguntas, clasifica cada una como descriptiva, exploratoria, inferencia, predictiva o causal, y razona brevemente (una frase) el porqué:
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+1. Dado un registro de vehículos que circulan por una autopista, disponemos de su marca y modelo, país de matriculación, y tipo de vehículo (por número de ruedas). Con tal de ajustar precios de los peajes, ¿Cuántos vehículos tenemos por tipo? ¿Cuál es el tipo más frecuente? ¿De qué países tenemos más vehículos?
+
+    Descriptiva
+
+
+
+
+
 
 ```{r cars}
 summary(cars)
