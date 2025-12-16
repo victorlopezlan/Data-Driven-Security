@@ -15,23 +15,7 @@ De las siguientes preguntas, clasifica cada una como descriptiva, exploratoria, 
 
 1. Dado un registro de vehículos que circulan por una autopista, disponemos de su marca y modelo, país de matriculación, y tipo de vehículo (por número de ruedas). Con tal de ajustar precios de los peajes, ¿Cuántos vehículos tenemos por tipo? ¿Cuál es el tipo más frecuente? ¿De qué países tenemos más vehículos?
 
-    Descriptiva
+    Descriptiva, ya que estamos buscando estadíticas del total de vehículos según sus características para hacer un ajuste del precio de los peajes.
 
 
 
-
-
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
