@@ -27,8 +27,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
     Predictiva, ya que intentamos predecir un comportamiento futuro a partir de un registro de peticiones ya realizadas a un sitio web.
 
-•	Tipo de pregunta: Predictiva
-•	Razón: Se intenta anticipar el comportamiento futuro (si los próximos mensajes seguirán dando problemas) y comparar con otras redes. (La parte de comparar con otras redes también tiene un componente exploratorio, pero la pregunta principal es predictiva).
+
+**4. Dado los registros de usuarios de un servicio de compras por internet, los usuarios pueden agruparse por preferencias de productos comprados. Queremos saber si ¿Es posible que, dado un usuario al azar y según su historial, pueda ser directamente asignado a un o diversos grupos?**
+
+    Predictiva, porque a partir de los datos que tenemos del historial del usuario, le estamos asignando a un o diversos grupos.
+
+    
+
+
 
 
 
