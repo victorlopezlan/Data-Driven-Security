@@ -44,6 +44,7 @@ Predictiva, porque a partir de los datos que tenemos del historial del usuario, 
 
 ```{r carrega_llibreires}
 library(readr)
+library(dplyr)
 ```
 
 
@@ -88,7 +89,41 @@ Pregunta 3
 ```{r limpiarTipo}
 epa_http$Action <- sub('^"', '', epa_http$Action)
 ```
+```{r filtrarGET_y_CONTEO}
+
+# Creamos un nuevo dataframe donde solo estan las filas con GET
+epa_get <- epa_http[epa_http$Action == "GET", ]
+#Vemos cuales son los valores unicos que tine la columa de Action
+#unique(epa_get$Action)
+
+#Cogemos en nuevo dataframe y le creamos una nueva columna llamada hora con el valor correspondiente del Timestamp
+epa_get <- epa_get %>%
+  mutate(
+    Hora = sub("^\\[|\\]$", "", Timestamp),  # quita [ ]
+    Hora = sapply(strsplit(Hora, ":"), `[`, 2)
+  )
+
+#Comprovamos que la obtención de los valores de las horas estan en el rango correcto [0-23]
+#unique(epa_get$Hora)
+
+#Hacemos el conteo de cuantas veces aparece cada una de las horas:
+# Para ello creamos un df nuevo con solo dos columnas, el valor de las horas [0-23] y el número de veces que aparece cada hora
+conteo_horas <- epa_get %>%
+  count(Hora)
+
+cat("La hora más comun es:\n")
+#print(conteo_horas)
+
+conteo_horas[order(conteo_horas$n, decreasing = TRUE), ]
+#print(conteo_horas)
+
+head(conteo_horas[order(conteo_horas$n, decreasing = TRUE), ], 1)
+
+#head(epa_get)
+```
+
 ```{r headjj2}
-head(epa_http)
+#head(epa_http)
+#nrow(epa_http)
 ```
 

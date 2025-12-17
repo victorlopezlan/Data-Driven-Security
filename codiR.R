@@ -22,3 +22,5 @@ mean(epa_http[[7]], na.rm = T)
 sum(grepl(".edu", epa_http$X1))
 # Limpiar comillas campo GET
 epa_http$X3 <- sub('^"', '', epa_http$X3)
+# Filtramos las filas que tienen GET
+epa_get <- epa_http[epa_http$Action == "GET", ]
