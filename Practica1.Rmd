@@ -12,7 +12,7 @@ knitr::opts_chunk$set(error = F)
 knitr::opts_chunk$set(message = F)
 ```
 
-## Ejercicio 1
+## **Ejercicio 1**
 
 **De las siguientes preguntas, clasifica cada una como descriptiva, exploratoria, inferencia, predictiva o causal, y razona brevemente (una frase) el porqué:**
 
@@ -40,7 +40,7 @@ Predictiva, ya que intentamos predecir un comportamiento futuro a partir de un r
 Predictiva, porque a partir de los datos que tenemos del historial del usuario, le estamos asignando a un o diversos grupos.
 ```
 
-## Pregunta 2
+## **Ejercicio 2**
 
 ```{r carrega_llibreires}
 library(readr)
@@ -59,36 +59,37 @@ colnames(epa_http) <- c("IP", "Timestamp", "Action", "File", "HTTP version", "Re
 head(epa_http)
 ```
 
-Pregunta 1
+#### **Pregunta 1**
 
-Número filas:
+**Número filas:**
 ```{r numFilas}
 nrow(epa_http)
 ```
 
-Número columnas:
+**Número columnas:**
 ```{r numCol}
 ncol(epa_http)
 ```
 
-Media columna Bytes:
+**Media columna Bytes:**
 ```{r mediaBytes}
 epa_http$Bytes <- as.integer(epa_http$Bytes)
 mean(epa_http$Bytes, na.rm = T)
 ```
 
-Pregunta 2
+#### **Pregunta 2**
 
 ```{r sumaEdus}
 sum(grepl(".edu", epa_http$IP))
 
 ```
 
-Pregunta 3
+#### **Pregunta 3**
 
 ```{r limpiarTipo}
 epa_http$Action <- sub('^"', '', epa_http$Action)
 ```
+
 ```{r filtrarGET_y_CONTEO}
 
 # Creamos un nuevo dataframe donde solo estan las filas con GET
@@ -111,17 +112,31 @@ epa_get <- epa_get %>%
 conteo_horas <- epa_get %>%
   count(Hora)
 
-cat("La hora más comun es:\n")
+cat("La hora más comun en las peticiones que ha recibido el servidor es:\n")
 #print(conteo_horas)
 
-conteo_horas[order(conteo_horas$n, decreasing = TRUE), ]
-#print(conteo_horas)
+#conteo_horas[order(conteo_horas$n, decreasing = TRUE), ]
 
+#Mostramos solo la primera fila, ya que estamos filtrando de manera descendente la columna que contiene el número de veces que aparece cada hora
 head(conteo_horas[order(conteo_horas$n, decreasing = TRUE), ], 1)
 
-#head(epa_get)
 ```
 
+#### **Pregunta 4**
+```{r Apartado4}
+
+#filtramos solo las filas que contienen la cadena de texto ".edu" en la columna de IP
+epa_edu <- epa_http[grepl("\\.edu", epa_http$IP), ]
+
+#filtramos solo las filas que contienen un fichero de descarga .txt
+epa_edu <- epa_edu[grepl("\\.txt", epa_edu$File), ]
+
+
+cat("El número total de Bytes que se han transmitido en las peticiones de descarga de ficheros de texto son:\n")
+#Hacemos la suma de la columna de Bytes, ignorando aquellos que tienen valor de NA
+sum(epa_edu$Bytes, na.rm = T)
+
+```
 ```{r headjj2}
 #head(epa_http)
 #nrow(epa_http)
