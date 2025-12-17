@@ -10,6 +10,8 @@ library(readr)
 epa_http <- read_table("epa-http.csv", col_names = FALSE, show_col_types = F)
 # Visualització dades
 head(epa_http)
+
+################           Ejercicio 1               ########################
 # Número de files
 nrow(epa_http)
 # Número de columnes
@@ -18,6 +20,9 @@ ncol(epa_http)
 epa_http$X7 <- as.double(epa_http$X7)
 # Calcular la mitja de la columna Bytes
 mean(epa_http[[7]], na.rm = T)
+
+################           Ejercicio 2               ########################
+
 # Número IPs .edu
 sum(grepl(".edu", epa_http$X1))
 
