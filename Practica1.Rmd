@@ -142,3 +142,9 @@ sum(epa_edu$Bytes, na.rm = T)
 #nrow(epa_http)
 ```
 
+#### **Pregunta 5**
+```{r Apartado5}
+cat("El número total de peticiones que buscan directamente la URL = \"/\" son:\n")
+#Hacemos la suma de las filas cuyo File tenga de valor "/"
+sum(epa_http$File == "/")
+```
