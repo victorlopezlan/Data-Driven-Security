@@ -65,3 +65,8 @@ sum(epa_edu$Bytes, na.rm = T)
 
 #Hacemos la suma de las filas cuyo File tenga de valor "/"
 sum(epa_http$File == "/")
+
+################           Ejercicio 6                ########################
+
+#Hacemos la suma de las filas cuyo Protocolo NO tenga de valor HTTP/0.2 
+cat(sum(epa_http$Protocolo != "HTTP/0.2"))
