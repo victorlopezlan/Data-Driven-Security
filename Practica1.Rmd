@@ -1,6 +1,6 @@
 ---
 title: "Práctica 1"
-author: "Oriol, Víctor, Miriam, Ulises"
+author: "Oriol, Víctor, Miriam"
 date: "2025-12-15"
 output: html_document
 ---
@@ -41,57 +41,102 @@ Predictiva, porque a partir de los datos que tenemos del historial del usuario, 
 ```
 
 ## **Ejercicio 2**
+**El segundo apartado de la práctica consiste en el análisis de un fichero de registro de peticiones HTTP, que debéis descargar el fichero adjunto: epa-http.zip, cargar en R, y realizar un análisis**
 
-```{r carrega_llibreires}
+**Se recomienda tener cierto nivel de familiaridad y al alcance los cheatsheet de las distintas librerías mencionadas en las sesiones de teoría para un análisis más fácil:**
+
+**- readr**
+
+**- stringr**
+
+**Alternativamente, recordad que podéis consultar la sección de ayuda de RStudio y buscar en la documentación los parámetros, así como ejemplos de uso (al final de cada página de documentación) para las funciones (escribiendo ?<nombre-funcion> o presionando F1 sobre el nombre de la función.** 
+
+**Para las siguientes preguntas se requiere usar R. Indica en este documento para cada pregunta el resultado obtenido, describiendo a grandes rasgos el procedimiento seguido para la obtención de la respuesta, justificando cada decisión tomada a la hora de manipular los datos (descartar, agrupar, transformar, etc).**
+
+**Asegúrate de entregar también el código en un fichero aparte, para poder ejecutarse directamente en un terminal limpio de R.**
+
+```{r carrega_llibreries}
 library(readr)
 library(dplyr)
+library(stringr)
 ```
 
+Limpiamos los datos e indicamos el tipo de dato de cada campo:
 
+- Mediante la librería 'stringr' impiamos el símbolo " que se encuentra al inicio de cada valor del campo Action y el símbolo " que se encuentra al final de cada valor del campo Protocolo.
+
+- Campo ResponseCode lo cambiamos al tipo de dato factor, ya que son "etiquetas", no son valores númericos.
+
+- Campo Bytes lo cambiamos al tipo de dato integer, ya que si que nos interesa tratarlo como valor númerico.
 
 ```{r carrega_dades}
 epa_http <- read_table("epa-http.csv", col_names = FALSE, show_col_types = F)
-colnames(epa_http) <- c("IP", "Timestamp", "Action", "File", "HTTP version", "Response Code", "Bytes")
+colnames(epa_http) <- c("IP", "Timestamp", "Action", "File", "Protocolo", "ResponseCode", "Bytes")
+# Cambiamos el tipo de la columna ResponseCode a factor 
+epa_http$ResponseCode <- as.factor(epa_http$ResponseCode)
+# Cambiamos el tipo de la columna Bytes a integer
+epa_http$Bytes <- as.integer(epa_http$Bytes)
+#Limpiamos el simbolo " al inicio del campo Action con libreria stringr
+epa_http$Action <- str_remove(epa_http$Action, '^"')
+#Alternativa para limpiar " del inicio del campo Action
+#epa_http$Action <- sub('^"', '', epa_http$Action)
+#Limpiamos el simbolo " del final del campo Protocolo con libreria stringr
+epa_http$Protocolo <- str_remove(epa_http$Protocolo, '"$')
 ```
 
+```{r show_dades, comment = NA}
+knitr::kable(
+  head(epa_http),
+  caption = "Primeras 6 filas del conjunto de datos:"
+)
+```
 
-```{r headjj}
-head(epa_http)
+Utilizando libreria DT podemos mostrar todo el conjunto de datos, incluyendo un buscador:
+
+*Hay que tener en cuenta el consumo que conlleva y el volumen de datos con el que estemos trabajando*
+
+```{r show_dades3, comment = NA}
+DT::datatable(
+  epa_http,
+  options = list(
+    pageLength = 10,
+    scrollX = TRUE,
+    caption = "Todo el conjunto de datos:"
+  )
+)
 ```
 
 #### **Pregunta 1**
+**Una vez cargado el Dataset a analizar, comprobando que se cargan las IPs, el Timestamp, la Petición (Tipo, URL y Protocolo), Código de respuesta, y Bytes de reply.**
 
-**Número filas:**
-```{r numFilas}
-nrow(epa_http)
+1. Cuales son las dimensiones del dataset cargado (número de filas y columnas)
+
+Número filas:
+```{r Apartado1.1, comment = NA}
+cat(nrow(epa_http))
 ```
 
-**Número columnas:**
-```{r numCol}
-ncol(epa_http)
+Número columnas:  
+```{r Apartado1.2, comment = NA}
+cat(ncol(epa_http))
 ```
 
-**Media columna Bytes:**
-```{r mediaBytes}
-epa_http$Bytes <- as.integer(epa_http$Bytes)
-mean(epa_http$Bytes, na.rm = T)
+2. Valor medio de la columna Bytes
+```{r mediaBytes, comment = NA}
+cat(mean(epa_http$Bytes, na.rm = T))
 ```
 
 #### **Pregunta 2**
-
-```{r sumaEdus}
-sum(grepl(".edu", epa_http$IP))
+**De las diferentes IPs de origen accediendo al servidor, ¿cuantas pertenecen a una IP claramente educativa (que contenga ".edu")?**
+```{r Apartado2, comment = NA}
+cat(sum(grepl(".edu", epa_http$IP)))
 
 ```
 
 #### **Pregunta 3**
+**De todas las peticiones recibidas por el servidor cual es la hora en la que hay mayor volumen de peticiones HTTP de tipo "GET"?**
 
-```{r limpiarTipo}
-epa_http$Action <- sub('^"', '', epa_http$Action)
-```
-
-```{r filtrarGET_y_CONTEO}
-
+```{r Apartado3, comment = NA}
 # Creamos un nuevo dataframe donde solo estan las filas con GET
 epa_get <- epa_http[epa_http$Action == "GET", ]
 #Vemos cuales son los valores unicos que tine la columa de Action
@@ -112,18 +157,16 @@ epa_get <- epa_get %>%
 conteo_horas <- epa_get %>%
   count(Hora)
 
-cat("La hora más comun en las peticiones que ha recibido el servidor es:\n")
-#print(conteo_horas)
-
-#conteo_horas[order(conteo_horas$n, decreasing = TRUE), ]
-
 #Mostramos solo la primera fila, ya que estamos filtrando de manera descendente la columna que contiene el número de veces que aparece cada hora
 head(conteo_horas[order(conteo_horas$n, decreasing = TRUE), ], 1)
 
 ```
 
 #### **Pregunta 4**
-```{r Apartado4}
+**De las peticiones hechas por instituciones educativas (.edu), ¿Cuantos bytes en total se han transmitido, en peticiones de descarga de ficheros de texto ".txt"?**
+
+El número total de Bytes que se han transmitido en las peticiones de descarga de ficheros de texto son:
+```{r Apartado4, comment = NA}
 
 #filtramos solo las filas que contienen la cadena de texto ".edu" en la columna de IP
 epa_edu <- epa_http[grepl("\\.edu", epa_http$IP), ]
@@ -131,20 +174,32 @@ epa_edu <- epa_http[grepl("\\.edu", epa_http$IP), ]
 #filtramos solo las filas que contienen un fichero de descarga .txt
 epa_edu <- epa_edu[grepl("\\.txt", epa_edu$File), ]
 
-
-cat("El número total de Bytes que se han transmitido en las peticiones de descarga de ficheros de texto son:\n")
 #Hacemos la suma de la columna de Bytes, ignorando aquellos que tienen valor de NA
-sum(epa_edu$Bytes, na.rm = T)
+cat(sum(epa_edu$Bytes, na.rm = T))
 
 ```
-```{r headjj2}
-#head(epa_http)
-#nrow(epa_http)
-```
+
+Justificación: De las 6539 peticiones que contienen ".edu" en el campo IP, filtramos de igual forma aquellas que tienen una extensión ".txt" en el campo File. Calculamos el total sumando las peticiones que cumplen con estas condiciones.
 
 #### **Pregunta 5**
-```{r Apartado5}
-cat("El número total de peticiones que buscan directamente la URL = \"/\" son:\n")
+**Si separamos la petición en 3 partes (Tipo, URL, Protocolo), usando str_split y el separador " " (espacio), ¿cuantas peticiones buscan directamente la URL = "/"?**
+
+El número total de peticiones que buscan directamente la URL = \"/\" son:
+
+```{r Apartado5, comment = NA}
 #Hacemos la suma de las filas cuyo File tenga de valor "/"
-sum(epa_http$File == "/")
+cat(sum(epa_http$File == "/"))
 ```
+
+Justificación: Hemos calculado el total de filas donde el campo File contenga el símbolo /
+
+#### **Pregunta 6**
+**Aprovechando que hemos separado la petición en 3 partes (Tipo, URL, Protocolo) ¿Cuantas peticiones NO tienen como protocolo "HTTP/0.2"?**
+
+Peticiones que NO tienen como protocolo HTTP/0.2:
+
+```{r Apartado6, comment = NA}
+#Hacemos la suma de las filas cuyo Protocolo NO tenga de valor HTTP/0.2 
+cat(sum(epa_http$Protocolo != "HTTP/0.2"))
+```
+Justificación: Hemos calculado el total de filas que NO tienen como valor HTTP/0.2
