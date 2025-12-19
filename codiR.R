@@ -6,8 +6,10 @@
 
 # Carrega llibreries
 library(readr)
+library(dplyr)
 # Carrega dades
 epa_http <- read_table("epa-http.csv", col_names = FALSE, show_col_types = F)
+colnames(epa_http) <- c("IP", "Timestamp", "Action", "File", "HTTP version", "Response Code", "Bytes")
 # Visualització dades
 head(epa_http)
 
@@ -17,19 +19,19 @@ nrow(epa_http)
 # Número de columnes
 ncol(epa_http)
 # Convertir columna Bytes de char a double
-epa_http$X7 <- as.double(epa_http$X7)
+epa_http$Bytes <- as.double(epa_http$Bytes)
 # Calcular la mitja de la columna Bytes
-mean(epa_http[[7]], na.rm = T)
+mean(epa_http$Bytes, na.rm = T)
 
 ################           Ejercicio 2               ########################
 
 # Número IPs .edu
-sum(grepl(".edu", epa_http$X1))
+sum(grepl(".edu", epa_http$IP))
 
 ################           Ejercicio 3               ########################
 
 # Limpiar comillas campo GET
-epa_http$X3 <- sub('^"', '', epa_http$X3)
+epa_http$Action <- sub('^"', '', epa_http$Action)
 # Filtramos las filas que tienen GET
 epa_get <- epa_http[epa_http$Action == "GET", ]
 #Cogemos en nuevo dataframe y le creamos una nueva columna llamada hora con el valor correspondiente del Timestamp
