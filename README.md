@@ -53,7 +53,7 @@ __Practica1.Rmd__
 
 __Practica1.html__
 
-  Informe final generado a partir del archivo report.Rmd.
+  Informe final generado a partir del archivo Pratica1.Rmd.
   
   Puede abrirse directamente en cualquier navegador web y se sobreescribe cada vez que se renderiza Practica1.Rmd.
 
@@ -79,9 +79,9 @@ Clonar el repositorio: https://github.com/victorlopezlan/Data-Driven-Security.gi
 
 Abrir el proyecto en RStudio y ejecutar:
 
-  analysis.R , seleccionar todo el código y Control + Shift + Intro
+  codiR.R , seleccionar todo el código y Control + Shift + Intro
   
-  report.Rmd para generar el informe en HTML, Control + Shift + K
+  Practica1.Rmd para generar el informe en HTML, Control + Shift + K
 
 
 
