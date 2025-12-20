@@ -63,7 +63,7 @@ library(stringr)
 
 Limpiamos los datos e indicamos el tipo de dato de cada campo:
 
-- Mediante la librería 'stringr' impiamos el símbolo " que se encuentra al inicio de cada valor del campo Action y el símbolo " que se encuentra al final de cada valor del campo Protocolo.
+- Mediante la librería 'stringr' impiamos el símbolo " que se encuentra al inicio de cada valor del campo Tipo y el símbolo " que se encuentra al final de cada valor del campo Protocolo.
 
 - Campo ResponseCode lo cambiamos al tipo de dato factor, ya que son "etiquetas", no son valores númericos.
 
@@ -71,15 +71,15 @@ Limpiamos los datos e indicamos el tipo de dato de cada campo:
 
 ```{r carrega_dades}
 epa_http <- read_table("epa-http.csv", col_names = FALSE, show_col_types = F)
-colnames(epa_http) <- c("IP", "Timestamp", "Action", "File", "Protocolo", "ResponseCode", "Bytes")
+colnames(epa_http) <- c("IP", "Timestamp", "Tipo", "URL", "Protocolo", "ResponseCode", "Bytes")
 # Cambiamos el tipo de la columna ResponseCode a factor 
 epa_http$ResponseCode <- as.factor(epa_http$ResponseCode)
 # Cambiamos el tipo de la columna Bytes a integer
 epa_http$Bytes <- as.integer(epa_http$Bytes)
-#Limpiamos el simbolo " al inicio del campo Action con libreria stringr
-epa_http$Action <- str_remove(epa_http$Action, '^"')
-#Alternativa para limpiar " del inicio del campo Action
-#epa_http$Action <- sub('^"', '', epa_http$Action)
+#Limpiamos el simbolo " al inicio del campo Tipo con libreria stringr
+epa_http$Tipo <- str_remove(epa_http$Tipo, '^"')
+#Alternativa para limpiar " del inicio del campo Tipo
+#epa_http$Tipo <- sub('^"', '', epa_http$Tipo)
 #Limpiamos el simbolo " del final del campo Protocolo con libreria stringr
 epa_http$Protocolo <- str_remove(epa_http$Protocolo, '"$')
 ```
@@ -109,22 +109,28 @@ DT::datatable(
 #### **Pregunta 1**
 **Una vez cargado el Dataset a analizar, comprobando que se cargan las IPs, el Timestamp, la Petición (Tipo, URL y Protocolo), Código de respuesta, y Bytes de reply.**
 
-1. Cuales son las dimensiones del dataset cargado (número de filas y columnas)
+**1. Cuales son las dimensiones del dataset cargado (número de filas y columnas)**
 
 Número filas:
 ```{r Apartado1.1, comment = NA}
 cat(nrow(epa_http))
 ```
 
+Justificación: utilizamos *nrow* para obtener el número de filas.
+
 Número columnas:  
 ```{r Apartado1.2, comment = NA}
 cat(ncol(epa_http))
 ```
 
-2. Valor medio de la columna Bytes
+Justificación: Utilizamos *ncol* para obtener el número de columnas.
+
+**2. Valor medio de la columna Bytes**
 ```{r mediaBytes, comment = NA}
 cat(mean(epa_http$Bytes, na.rm = T))
 ```
+
+Justificación: Utilizamos *mean* para calcular el valor medio de la columna Bytes, indicamos que se ignores valores NA.
 
 #### **Pregunta 2**
 **De las diferentes IPs de origen accediendo al servidor, ¿cuantas pertenecen a una IP claramente educativa (que contenga ".edu")?**
@@ -133,14 +139,16 @@ cat(sum(grepl(".edu", epa_http$IP)))
 
 ```
 
+Justificación: Utilizamos *grepl* para filtrar peticiones que contengan ".edu" en el campo IP, obtenemos el total de peticiones que cumplen este filtro.
+
 #### **Pregunta 3**
 **De todas las peticiones recibidas por el servidor cual es la hora en la que hay mayor volumen de peticiones HTTP de tipo "GET"?**
 
+Justificación: Generamos un nuevo dataframe donde únicamente estén las filas con GET, añadimos una nueva columna *Hora* con las diferentes horas del día que se encuentran en la columna Timestamp y agrupamos por horas. Creamos un dataframe con únicamente 2 columnas: Hora (0-23) y número de peticiones por hora; si ordenamos en orden descendente y solo mostramos la primera fila, tenemos la hora en la que mayor volumen hay:
+
 ```{r Apartado3, comment = NA}
 # Creamos un nuevo dataframe donde solo estan las filas con GET
-epa_get <- epa_http[epa_http$Action == "GET", ]
-#Vemos cuales son los valores unicos que tine la columa de Action
-#unique(epa_get$Action)
+epa_get <- epa_http[epa_http$Tipo == "GET", ]
 
 #Cogemos en nuevo dataframe y le creamos una nueva columna llamada hora con el valor correspondiente del Timestamp
 epa_get <- epa_get %>%
@@ -149,17 +157,42 @@ epa_get <- epa_get %>%
     Hora = sapply(strsplit(Hora, ":"), `[`, 2)
   )
 
-#Comprovamos que la obtención de los valores de las horas estan en el rango correcto [0-23]
-#unique(epa_get$Hora)
-
 #Hacemos el conteo de cuantas veces aparece cada una de las horas:
-# Para ello creamos un df nuevo con solo dos columnas, el valor de las horas [0-23] y el número de veces que aparece cada hora
-conteo_horas <- epa_get %>%
-  count(Hora)
+# Para ello creamos un dataframe nuevo con solo dos columnas, el valor de las horas [0-23] y el número de veces que aparece cada hora
+conteo_horas <- epa_get %>%count(Hora)
 
 #Mostramos solo la primera fila, ya que estamos filtrando de manera descendente la columna que contiene el número de veces que aparece cada hora
-head(conteo_horas[order(conteo_horas$n, decreasing = TRUE), ], 1)
+hora_max <- conteo_horas %>%
+  arrange(desc(n)) %>%  # Orden descendente
+  slice(1) %>%                  # Solo la primera fila
+  pull(Hora)                     # Extrae la columna "Hora"
 
+cat(hora_max)
+
+knitr::kable(
+  conteo_horas %>%
+    arrange(desc(n)) %>%  # Orden descendente por la columna n
+    slice(1:5),             # Solo la primera fila
+  caption = "Mostramos las 5 horas del día con mayor número de peticiones:"
+)
+
+```
+
+Probamos *barplot* para generar un gráfico de barras que nos informe del número de peticiones HTTP GET por hora:
+
+```{r Apartado3.2, comment = NA}
+# Ordenamos horas
+conteo_horas <- conteo_horas[order(conteo_horas$Hora), ]
+
+#Generamos gráfico de barras
+barplot(
+  height = conteo_horas$n,
+  names.arg = conteo_horas$Hora,
+  col = "steelblue",
+  xlab = "Hora del día",
+  ylab = "Número de peticiones HTTP GET",
+  main = "Peticiones HTTP GET por hora"
+)
 ```
 
 #### **Pregunta 4**
@@ -172,14 +205,14 @@ El número total de Bytes que se han transmitido en las peticiones de descarga d
 epa_edu <- epa_http[grepl("\\.edu", epa_http$IP), ]
 
 #filtramos solo las filas que contienen un fichero de descarga .txt
-epa_edu <- epa_edu[grepl("\\.txt", epa_edu$File), ]
+epa_edu <- epa_edu[grepl("\\.txt", epa_edu$URL), ]
 
 #Hacemos la suma de la columna de Bytes, ignorando aquellos que tienen valor de NA
 cat(sum(epa_edu$Bytes, na.rm = T))
 
 ```
 
-Justificación: De las 6539 peticiones que contienen ".edu" en el campo IP, filtramos de igual forma aquellas que tienen una extensión ".txt" en el campo File. Calculamos el total sumando las peticiones que cumplen con estas condiciones.
+Justificación: De las 6539 peticiones que contienen ".edu" en el campo IP, filtramos de igual forma aquellas que tienen una extensión ".txt" en el campo URL. Calculamos el total sumando las peticiones que cumplen con estas condiciones.
 
 #### **Pregunta 5**
 **Si separamos la petición en 3 partes (Tipo, URL, Protocolo), usando str_split y el separador " " (espacio), ¿cuantas peticiones buscan directamente la URL = "/"?**
@@ -187,11 +220,11 @@ Justificación: De las 6539 peticiones que contienen ".edu" en el campo IP, filt
 El número total de peticiones que buscan directamente la URL = \"/\" son:
 
 ```{r Apartado5, comment = NA}
-#Hacemos la suma de las filas cuyo File tenga de valor "/"
-cat(sum(epa_http$File == "/"))
+#Hacemos la suma de las filas cuyo URL tenga de valor "/"
+cat(sum(epa_http$URL == "/"))
 ```
 
-Justificación: Hemos calculado el total de filas donde el campo File contenga el símbolo /
+Justificación: Hemos calculado el total de filas donde el campo URL contenga el símbolo /
 
 #### **Pregunta 6**
 **Aprovechando que hemos separado la petición en 3 partes (Tipo, URL, Protocolo) ¿Cuantas peticiones NO tienen como protocolo "HTTP/0.2"?**
