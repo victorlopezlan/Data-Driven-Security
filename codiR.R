@@ -75,7 +75,7 @@ sum(epa_edu$Bytes, na.rm = T)
 
 ################           Ejercicio 5                ########################
 
-#Hacemos la suma de las filas cuyo File tenga de valor "/"
+#Hacemos la suma de las filas cuyo URL tenga de valor "/"
 sum(epa_http$URL == "/")
 
 ################           Ejercicio 6                ########################
