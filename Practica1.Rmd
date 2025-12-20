@@ -12,7 +12,12 @@ knitr::opts_chunk$set(error = F)
 knitr::opts_chunk$set(message = F)
 ```
 
+<<<<<<< HEAD
 ## **Ejercicio 1**
+=======
+# 1. Data Science
+## Pregunta 1
+>>>>>>> main
 
 **De las siguientes preguntas, clasifica cada una como descriptiva, exploratoria, inferencia, predictiva o causal, y razona brevemente (una frase) el porqué:**
 
@@ -40,10 +45,40 @@ Predictiva, ya que intentamos predecir un comportamiento futuro a partir de un r
 Predictiva, porque a partir de los datos que tenemos del historial del usuario, le estamos asignando a un o diversos grupos.
 ```
 
+<<<<<<< HEAD
 ## **Ejercicio 2**
 **El segundo apartado de la práctica consiste en el análisis de un fichero de registro de peticiones HTTP, que debéis descargar el fichero adjunto: epa-http.zip, cargar en R, y realizar un análisis**
 
 **Se recomienda tener cierto nivel de familiaridad y al alcance los cheatsheet de las distintas librerías mencionadas en las sesiones de teoría para un análisis más fácil:**
+=======
+    
+## Pregunta 2:
+
+**Considera el siguiente escenario:<br>**
+**Sabemos que un usuario de nuestra red empresarial ha estado usando esta para fines no relacionados con el trabajo, como por ejemplo tener un servicio web no autorizado abierto a la red (otros usuarios tienen servicios web activados y autorizados). No queremos tener que rastrear los puertos de cada PC, y sabemos que la actividad puede haber cesado. Pero podemos acceder a los registros de conexiones TCP de cada máquina de cada trabajador (hacia donde abre conexión un PC concreto). Sabemos que nuestros clientes se conectan desde lugares remotos de forma legítima, como parte de nuestro negocio, y que un trabajador puede haber habilitado temporalmente servicios de prueba. Nuestro objetivo es reducir lo posible la lista de posibles culpables, con tal de explicarles que por favor no expongan nuestros sistemas sin permiso de los operadores o la dirección.**
+
+**Explica con detalle cómo se podría proceder al análisis y resolución del problema mediante Data Science, indicando de donde se obtendrían los datos, qué tratamiento deberían recibir, qué preguntas hacerse para resolver el problema, qué datos y gráficos se obtendrían, y cómo se comunicarían estos.**
+
+    Obtendríamos los datos de los registros de conexiones TCP salientes por máquina, por ejemplo de los logs del firewall.
+    
+    Para tratar este conjunto de conexiones TCP primero tendríamos que parsear los datos y normalizarlos para poder trabajar con ellos de forma rápida y eficiente. Además, tendremos que eliminar registros incompletos, asociar cada IP interna a un usuario o equipo concreto. 
+    
+    Para resolver el problema podrían hacerse estas preguntas:
+      -¿Qué patrón deja un servicio web expuesto?
+      -¿Qué PCs tienen un número alto de IPs externas únicas conectadas?
+      -¿Qué PCs reciben conexiones desde múltiples países?
+      -¿Qué PCs reciben conexiones fuera de horario laboral?
+
+    Con este análisis podríamos obtener el siguiente listado de gráficos:
+      -Histograma: para poder analizar qué IPs externas únicas hay por PC
+      -Serie temporal: para observar número de conexiones por hora
+      -Mapa geográfico: para determinar el origen de IPs externas por cada PC
+      -Heatmap: para poder ver los PC con mayorn número de uso de sus puertos
+    
+    Para comunicar todo estos datos y gráficos a los trabajadores lo haríamos de una forma no acusatoria, buscando su colaboración mostrandóle los motivos por los cuales su comportamiento no es el adecuado y podría comportar riesgos para la empresa. 
+    
+    Por otro lado, para comunicarsélos a los directivos haríamos uso de estos gráficos con mensajes claros demostrar las conclusiones y soluciones a las que se han llegado con el análisis.
+>>>>>>> main
 
 **- readr**
 
