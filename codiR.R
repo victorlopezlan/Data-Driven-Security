@@ -4,23 +4,32 @@
 # date: 2025-12-15
 #--------------------------------
 
-# Carrega llibreries
+# Carga de librerías
 library(readr)
 library(dplyr)
-# Carrega dades
+library(stringr)
+# Carga de datos
 epa_http <- read_table("epa-http.csv", col_names = FALSE, show_col_types = F)
-colnames(epa_http) <- c("IP", "Timestamp", "Action", "File", "HTTP version", "Response Code", "Bytes")
-# Visualització dades
+colnames(epa_http) <- c("IP", "Timestamp", "Tipo", "URL", "Protocolo", "ResponseCode", "Bytes")
+# Cambiamos el tipo de la columna ResponseCode a factor 
+epa_http$ResponseCode <- as.factor(epa_http$ResponseCode)
+# Cambiamos el tipo de la columna Bytes a integer
+epa_http$Bytes <- as.integer(epa_http$Bytes)
+#Limpiamos el simbolo " al inicio del campo Tipo con libreria stringr
+epa_http$Tipo <- str_remove(epa_http$Tipo, '^"')
+#Alternativa para limpiar " del inicio del campo Tipo
+#epa_http$Tipo <- sub('^"', '', epa_http$Tipo)
+#Limpiamos el simbolo " del final del campo Protocolo con libreria stringr
+epa_http$Protocolo <- str_remove(epa_http$Protocolo, '"$')
+# Visualización datos
 head(epa_http)
 
 ################           Ejercicio 1               ########################
-# Número de files
+# Número filas
 nrow(epa_http)
-# Número de columnes
+# Número columnas
 ncol(epa_http)
-# Convertir columna Bytes de char a double
-epa_http$Bytes <- as.double(epa_http$Bytes)
-# Calcular la mitja de la columna Bytes
+# Valor medio de la columna Bytes
 mean(epa_http$Bytes, na.rm = T)
 
 ################           Ejercicio 2               ########################
@@ -30,10 +39,9 @@ sum(grepl(".edu", epa_http$IP))
 
 ################           Ejercicio 3               ########################
 
-# Limpiar comillas campo GET
-epa_http$Action <- sub('^"', '', epa_http$Action)
-# Filtramos las filas que tienen GET
-epa_get <- epa_http[epa_http$Action == "GET", ]
+# Creamos un nuevo dataframe donde solo estan las filas con GET
+epa_get <- epa_http[epa_http$Tipo == "GET", ]
+
 #Cogemos en nuevo dataframe y le creamos una nueva columna llamada hora con el valor correspondiente del Timestamp
 epa_get <- epa_get %>%
   mutate(
@@ -41,14 +49,17 @@ epa_get <- epa_get %>%
     Hora = sapply(strsplit(Hora, ":"), `[`, 2)
   )
 
+#Hacemos el conteo de cuantas veces aparece cada una de las horas:
+# Para ello creamos un dataframe nuevo con solo dos columnas, el valor de las horas [0-23] y el número de veces que aparece cada hora
+conteo_horas <- epa_get %>%count(Hora)
 
-#Creamos un nuevo dataframe con solo las horas de las peticiones GET y que cuenta cuantas veces aparece cada hora:
-conteo_horas <- epa_get %>%
-  count(Hora)
+#Mostramos solo la primera fila, ya que estamos filtrando de manera descendente la columna que contiene el número de veces que aparece cada hora
+hora_max <- conteo_horas %>%
+  arrange(desc(n)) %>%  # Orden descendente
+  slice(1) %>%                  # Solo la primera fila
+  pull(Hora)                     # Extrae la columna "Hora"
 
-# Filtramos en orden descendente (mayor numero de veces que aparece la hora a menor)
-# esto hace que la hora más común quede en primera fila de la tabla y solo tengamos que mostrar la primera fila para responder la pregunta del ejercico
-head(conteo_horas[order(conteo_horas$n, decreasing = TRUE), ], 1)
+hora_max
 
 ################           Ejercicio 4                ########################
 
@@ -56,7 +67,7 @@ head(conteo_horas[order(conteo_horas$n, decreasing = TRUE), ], 1)
 epa_edu <- epa_http[grepl("\\.edu", epa_http$IP), ]
 
 #filtramos solo las filas que contienen un fichero de descarga .txt
-epa_edu <- epa_edu[grepl("\\.txt", epa_edu$File), ]
+epa_edu <- epa_edu[grepl("\\.txt", epa_edu$URL), ]
 
 #Hacemos la suma de la columna de Bytes, ignorando aquellos que tienen valor de NA
 sum(epa_edu$Bytes, na.rm = T)
@@ -64,7 +75,7 @@ sum(epa_edu$Bytes, na.rm = T)
 ################           Ejercicio 5                ########################
 
 #Hacemos la suma de las filas cuyo File tenga de valor "/"
-sum(epa_http$File == "/")
+sum(epa_http$URL == "/")
 
 ################           Ejercicio 6                ########################
 
