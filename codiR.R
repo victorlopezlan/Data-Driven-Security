@@ -59,6 +59,7 @@ hora_max <- conteo_horas %>%
   slice(1) %>%                  # Solo la primera fila
   pull(Hora)                     # Extrae la columna "Hora"
 
+#Hora mayor volumen de peticiones
 hora_max
 
 ################           Ejercicio 4                ########################
