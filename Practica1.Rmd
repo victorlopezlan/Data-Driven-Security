@@ -169,6 +169,7 @@ hora_max <- conteo_horas %>%
 
 cat(hora_max)
 
+#Tabla sencilla mostrando las 5 horas del dia con mayor numero de peticiones
 knitr::kable(
   conteo_horas %>%
     arrange(desc(n)) %>%  # Orden descendente por la columna n
@@ -221,7 +222,7 @@ El número total de peticiones que buscan directamente la URL = \"/\" son:
 
 ```{r Apartado5, comment = NA}
 #Hacemos la suma de las filas cuyo URL tenga de valor "/"
-cat(sum(epa_http$URL == "/"))
+cat(sum(epa_http$URL == "/", na.rm = T))
 ```
 
 Justificación: Hemos calculado el total de filas donde el campo URL contenga el símbolo /
@@ -233,6 +234,6 @@ Peticiones que NO tienen como protocolo HTTP/0.2:
 
 ```{r Apartado6, comment = NA}
 #Hacemos la suma de las filas cuyo Protocolo NO tenga de valor HTTP/0.2 
-cat(sum(epa_http$Protocolo != "HTTP/0.2"))
+cat(sum(epa_http$Protocolo != "HTTP/0.2", na.rm = T))
 ```
 Justificación: Hemos calculado el total de filas que NO tienen como valor HTTP/0.2
